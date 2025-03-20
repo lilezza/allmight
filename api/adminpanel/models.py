@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, first_name, last_name, phone_number, password=None, **extra_fields):
+    def create_user(self, username, email, first_name='', last_name='', phone_number='', password=None, **extra_fields):
         """ایجاد یک کاربر معمولی"""
         if not email:
             raise ValueError("ایمیل الزامی است")
@@ -19,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, first_name, last_name, phone_number, password=None, **extra_fields):
+    def create_superuser(self, username, email, password=None, **extra_fields):
         """ایجاد سوپر یوزر"""
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -29,7 +29,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError("سوپر یوزر باید is_superuser=True باشد.")
 
-        return self.create_user(username, email, first_name, last_name, phone_number, password, **extra_fields)
+        return self.create_user(username, email, password=password, **extra_fields)
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
