@@ -3,26 +3,55 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializer import AdminUserSerializer
 from .models import CustomUser
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny  # دسترسی را برای همه باز کردم
 # from rest_framework.permissions import IsAdminUser
 
-class CreateAdminUser(APIView):
-    permission_classes = [AllowAny]  # فعلاً همه می‌توانند کاربر ایجاد کنند
-
-    def post(self, request):
-        serializer = AdminUserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class ListAdminUser(APIView):
+class UserAPI(APIView):
     permission_classes = [AllowAny]
 
-    def get(self , request):
+    def post(self , request):
+        serializer = AdminUserSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data , status = status.HTTP_201_CREATED)
+        return Response(serializer.errors , status = status.HTTP_400_BAD_REQUEST)
+    
+    def get(self , request , user_id=None):
+        if user_id:
+            user = get_object_or_404(CustomUser , id = user_id)
+            serializer = AdminUserSerializer(user)
+            return Response(serializer.data , status = status.HTTP_200_OK)
+        
         users = CustomUser.objects.all()
         serializer = AdminUserSerializer(users , many = True)
-        return Response (serializer.data , status=status.HTTP_200_OK)
+        return Response(serializer.data , status = status.HTTP_200_OK)
+    
+    def put(self , request , user_id):
+        user = get_object_or_404(CustomUser , id = user_id)
+        serializer = AdminUserSerializer(user , data = request.data , partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data , status = status.HTTP_200_OK)
+        return Response(serializer.errors , status = status.HTTP_400_BAD_REQUEST)
+
+    def delete(self , request , user_id):
+        user = get_object_or_404(CustomUser , id = user_id)
+        user.delete()
+        return Response({"message":"کاربر با موفقیت حذف شد"},status = status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+# class UserProfileAPI(APIView):
+#     permission_classes = [AllowAny]  # فعلاً دسترسی برای همه باز است
+
+#     def get(self, request, user_id):
+#         """دریافت اطلاعات یک کاربر خاص"""
+#         user = get_object_or_404(CustomUser, id=user_id)
+#         serializer = AdminUserSerializer(user)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
