@@ -12,13 +12,8 @@ class RegisterView(APIView):
     def post(self , request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "user" : RegisterSerializer(user).data ,
-                "refresh" : str(refresh),
-                "access" : str(refresh.access_token)
-            })
+            serializer.save()
+            return Response({"messages":"ثبت نام با موفقیت انجام شد"} , status = status.HTTP_201_CREATED)
         return Response(serializer.errors , status = status.HTTP_400_BAD_REQUEST)
 
 
@@ -27,7 +22,7 @@ class LoginView(APIView):
     def post(self , request):
         serializer = LoginSerializer(data = request.data)
         if serializer.is_valid():
-            user = serializer.validated_data
+            user = serializer.validated_data['user']
             token = serializer.get_token(user)
-            return Response(token , status = status.HTTP_200_OK)
+            return Response({"messages":"ورود موفقیت امیز بود" , "tokens" : token } , status = status.HTTP_200_OK)
         return Response (serializer.errors , status = status.HTTP_400_BAD_REQUEST)
