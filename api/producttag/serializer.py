@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import Tag
-from slugify import slugify
-import re
+from .models import Tag , Brand , Categories , Attribute
+from .validators import validate_slug_format , validate_unique_slug_for_model , auto_generate_slug
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,30 +8,59 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id' , 'name' , 'slug']
 
     def validate_slug(self, value):
-        if not re.match(r'^[a-zA-Z0-9-]+$', value):
-            raise serializers.ValidationError("slug فقط باید شامل حروف انگلیسی، عدد و خط تیره باشه.")
-        
-        qs = Tag.objects.filter(slug=value)
-        if self.instance:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise serializers.ValidationError("این slug قبلاً استفاده شده.")
-
-
-        return value
+        value = validate_slug_format(value)
+        return validate_unique_slug_for_model(Tag, value, self.instance)
 
     def validate(self, data):
-        # اگر اسلاگ داده نشده بود، بساز از روی name
-        if not data.get('slug') and data.get('name'):
-            data['slug'] = slugify(data['name'])
-
-        return data
+        return auto_generate_slug(data)
 
     def create(self, validated_data):
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        # هنگام آپدیت هم اگر slug داده نشده بود، بساز
-        if not validated_data.get('slug') and validated_data.get('name'):
-            validated_data['slug'] = slugify(validated_data['name'])
+        validated_data = auto_generate_slug(validated_data)
         return super().update(instance, validated_data)
+    
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ['id' , 'name' , 'slug']
+
+    def validate_slug(self, value):
+        value = validate_slug_format(value)
+        return validate_unique_slug_for_model(Brand, value, self.instance)
+
+    def validate(self, data):
+        return auto_generate_slug(data)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data = auto_generate_slug(validated_data)
+        return super().update(instance, validated_data)
+    
+class CategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = ['id' , 'name' , 'slug']
+    
+    def validate_slug(self, value):
+        value = validate_slug_format(value)
+        return validate_unique_slug_for_model(Categories, value, self.instance)
+
+    def validate(self, data):
+        return auto_generate_slug(data)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        validated_data = auto_generate_slug(validated_data)
+        return super().update(instance, validated_data)
+    
+class AttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attribute
+        fields = ['id' , 'name']
