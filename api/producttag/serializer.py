@@ -42,9 +42,16 @@ class BrandSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     
 class CategoriesSerializer(serializers.ModelSerializer):
+    # parent = serializers.SerializerMethodField()
+
     class Meta:
         model = Categories
-        fields = ['id' , 'name' , 'slug']
+        fields = ['id' , 'name' , 'slug' , 'parent']
+
+    # def get_parent(self , obj):
+    #     if obj.parent:
+    #         return obj.parent.id
+    #     return 0
     
     def validate_slug(self, value):
         value = validate_slug_format(value)
