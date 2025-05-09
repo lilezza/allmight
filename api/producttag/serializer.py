@@ -41,18 +41,22 @@ class BrandSerializer(serializers.ModelSerializer):
         validated_data = auto_generate_slug(validated_data)
         return super().update(instance, validated_data)
     
-class CategoriesSerializer(serializers.ModelSerializer):
-    # parent = serializers.SerializerMethodField()
+class CategoryParentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Categories
-        fields = ['id' , 'name' , 'slug' , 'parent']
+        fields = ['id' , 'name' , 'slug']
 
-    # def get_parent(self , obj):
-    #     if obj.parent:
-    #         return obj.parent.id
-    #     return 0
-    
+class CategoriesSerializer(serializers.ModelSerializer):
+    parent = CategoryParentSerializer(read_only=True)
+    parent_id = serializers.PrimaryKeyRelatedField(
+        queryset=Categories.objects.all(), source='parent', write_only=True, required=False
+    )
+
+    class Meta:
+        model = Categories
+        fields = ['id' , 'name' , 'slug' , 'parent' , 'parent_id']
+
     def validate_slug(self, value):
         value = validate_slug_format(value)
         return validate_unique_slug_for_model(Categories, value, self.instance)
@@ -67,6 +71,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
         validated_data = auto_generate_slug(validated_data)
         return super().update(instance, validated_data)
     
+
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
