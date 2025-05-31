@@ -18,7 +18,7 @@ class Brand(models.Model):
 class Categories(models.Model):
     name = models.CharField(max_length = 255)
     slug = models.SlugField(unique = True)
-    parent = models.ForeignKey('self' , null = True , blank = True , on_delete = models.SET_NULL , related_name = 'children')
+    parent = models.ForeignKey('self' , null = True , blank = True , on_delete = models.CASCADE , related_name = 'children' )
 
     def __str__(self):
         return self.name
