@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser , UserAddress
 
 class AdminUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
@@ -53,8 +53,8 @@ class AdminUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-    def update(self , instance , validated_date):
-        for attr , value in validated_date.items():
+    def update(self , instance , validated_data):
+        for attr , value in validated_data.items():
             if attr == 'password':
                 instance.set_password(value)
             else:
@@ -63,6 +63,12 @@ class AdminUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class UserAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ['id' , 'user' , 'province' , 'city' , 'title' , 'address' , 'phone_number' , 'home_phone_number']
+        
+
     # def update (self , instance , validated_data):
     #     instance.username = validated_data.get('username' , instance.username)
     #     instance.first_name = validated_data.get('first_name' , instance.first_name)

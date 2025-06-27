@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .serializer import AdminUserSerializer
-from .models import CustomUser
+from rest_framework import status , viewsets
+from .serializer import AdminUserSerializer , UserAddressSerializer
+from .models import CustomUser , UserAddress
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny  # دسترسی را برای همه باز کردم
 # from rest_framework.permissions import IsAdminUser
@@ -41,6 +41,10 @@ class UserAPI(APIView):
         return Response({"message":"کاربر با موفقیت حذف شد"},status = status.HTTP_204_NO_CONTENT)
 
 
+class UserAddressViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = UserAddress.objects.all()
+    serializer_class = UserAddressSerializer
 
 
 

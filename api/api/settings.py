@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'register',
     'product',
     'producttag',
+    'location',
+    'orders',
+    'transactions',
     'corsheaders',
 ]
 
@@ -174,4 +177,6 @@ AUTHENTICATION_BACKENDS = ['adminpanel.backends.EmailBackend']
 
 
 AUTH_USER_MODEL = 'adminpanel.CustomUser'
+
+
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product
+from .models import Product , ProductImage
 from producttag.models import Brand , Tag , Categories
 from slugify import slugify
 
@@ -21,3 +21,8 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Slug باید یکتا باشد.")
         
         return value
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id' , 'product' , 'image']

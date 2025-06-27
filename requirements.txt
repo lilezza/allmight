@@ -5,3 +5,4 @@ django-cors-headers
 djangorestframework-simplejwt
 python-slugify
 pillow
+requests
